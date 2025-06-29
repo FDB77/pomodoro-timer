@@ -14,6 +14,15 @@
             background-color: #f0f0f0;
             font-family: Arial, sans-serif;
         }
+        .status {
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            color: #666;
+        }
+        .mode-btn {
+            background-color: #9c27b0;
+            color: white;
+        }
         .timer-container {
             text-align: center;
             background: white;
@@ -58,8 +67,13 @@
 <body>
     <div class="timer-container">
         <h1>ポモドーロタイマー</h1>
+        <div class="status" id="status">作業モード</div>
         <div class="time-display" id="timeDisplay">25:00</div>
         <div class="controls">
+            <button class="mode-btn" onclick="toggleMode()">休憩モード</button>
+            <button class="start-btn" onclick="startTimer()">開始</button>
+            <button class="pause-btn" onclick="pauseTimer()">一時停止</button>
+            <button class="reset-btn" onclick="resetTimer()">リセット</button>
             <button class="start-btn" onclick="startTimer()">開始</button>
             <button class="pause-btn" onclick="pauseTimer()">一時停止</button>
             <button class="reset-btn" onclick="resetTimer()">リセット</button>
@@ -67,9 +81,12 @@
     </div>
 
     <script>
-        let timeLeft = 25 * 60; // 初期値は25分
+        const WORK_TIME = 25 * 60; // 作業時間（25分）
+        const BREAK_TIME = 5 * 60; // 休憩時間（5分）
+        let timeLeft = WORK_TIME; // 初期値は作業時間
         let timerInterval;
         let isRunning = false;
+        let isBreak = false; // 休憩モードかどうか
 
         function startTimer() {
             if (isRunning) return;
@@ -79,7 +96,9 @@
                 updateDisplay();
                 if (timeLeft <= 0) {
                     stopTimer();
-                    alert('時間になりました！');
+                    alert(isBreak ? '休憩時間になりました！' : '作業時間になりました！');
+                    // モードを切り替える
+                    toggleMode();
                 }
             }, 1000);
         }
@@ -92,7 +111,7 @@
 
         function resetTimer() {
             clearInterval(timerInterval);
-            timeLeft = 25 * 60;
+            timeLeft = isBreak ? BREAK_TIME : WORK_TIME;
             isRunning = false;
             updateDisplay();
         }
@@ -102,6 +121,19 @@
             const seconds = timeLeft % 60;
             document.getElementById('timeDisplay').textContent = 
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // ステータスを更新
+            document.getElementById('status').textContent = 
+                isBreak ? '休憩モード' : '作業モード';
+        }
+
+        function toggleMode() {
+            isBreak = !isBreak;
+            timeLeft = isBreak ? BREAK_TIME : WORK_TIME;
+            updateDisplay();
+            if (!isRunning) {
+                alert(isBreak ? '休憩モードに切り替えました' : '作業モードに切り替えました');
+            }
         }
 
         // ページ読み込み時に表示を更新
