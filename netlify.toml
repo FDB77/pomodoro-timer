@@ -1,0 +1,9 @@
+[build]
+  command = "echo 'Static site - no build step needed'"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[context.production.environment]
+  NODE_ENV = "production"
